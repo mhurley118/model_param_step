@@ -17,9 +17,9 @@ cwd = os.getcwd()
 os.chdir(args.path)
 
 print 'Loading file'
-steps = np.loadtxt('param_steps_'+str(args.brs)+'*3.dat')
+steps = np.loadtxt('param_steps_'+str(args.brs)+'.dat')
 print steps.shape
-steps.shape = (args.brs,-1)
+steps.shape = (args.brs+1,-1)
 (num_samp,num_param) = steps.shape
 print num_samp
 print num_param
@@ -99,30 +99,33 @@ avgfig.savefig('['+str(args.brs)+']hist_avg.png')
 
 ####################STEP####################
 if args.step:
+    os.chdir('%s/%s'%(cwd,args.path))
     print 'loading file'
-    steps = np.loadtxt('param_steps_'+str(args.brs)+'.dat')
-    steps.shape = (args.brs,-1)
+    steps.shape = (args.brs+1,-1)
     print 'adjusting shape'
     (num_samples, num_param) = steps.shape
     print steps.shape
 
+    stdx = stdstep[args.step]
     sample = steps[:,args.step]
     print 'Should be %s values'%(num_samples)
     print sample.size
 
     print 'plotting histogram'
-    hfig = plt.figure()
-    hx = hfig.add_subplot(111,title='Histogram of Step Values for Param %s'%(args.step))
-    hx.hist(sample,bins=100)
-    hfig.savefig('hist_param_%s['+str(args.brs)+'].png'%(args.step))
+    plt.title('Histogram of Step Values for Param #%s'%(args.step),fontsize=22)
+    plt.ylabel('Count',fontsize=20)
+    plt.xlabel('Change',fontsize=20)
+    plt.hist(sample,bins=100,normed=False,color='blue')
+    os.chdir('%s/plots'%cwd)
+    plt.savefig('hist_param_%s[%s].png'%(args.step,args.brs))
 
-    print 'plotting scatter plot'
-    sfig = plt.figure()
-    sx = sfig.add_subplot(111,title='Scatter Plot of Step Values for Param %s'%(args.step))
-    xval = range(sample.size)
-    for i in xrange(sample.size):
-        sx.scatter(xval[i],sample[i])
-    sfig.savefig('scatter_param_%s['+str(args.brs)+'].png'%(args.step))
+#    print 'plotting scatter plot'
+#    sfig = plt.figure()
+#    sx = sfig.add_subplot(111,title='Scatter Plot of Step Values for Param %s'%(args.step))
+#    xval = range(sample.size)
+#    for i in xrange(sample.size):
+#        sx.scatter(xval[i],sample[i])
+#    sfig.savefig('scatter_param_%s[%s].png'%(args.step,args.brs))
 
 
 print 'plotting figures, std as percent difference of avg FILTERED'
